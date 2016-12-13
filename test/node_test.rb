@@ -23,6 +23,7 @@ class NodeTest < Minitest::Test
 
   def test_insert_single_letter
     head = Node.new
+
     head.insert("a")
 
     assert_equal ["a"], head.links.keys
@@ -31,6 +32,7 @@ class NodeTest < Minitest::Test
 
   def test_insert_short_word
     head = Node.new
+
     head.insert("bat")
 
     assert_equal ["b"], head.links.keys
@@ -42,6 +44,7 @@ class NodeTest < Minitest::Test
 
   def test_insert_short_words_overlap
     head = Node.new
+
     head.insert("bat")
     head.insert("bar")
 
@@ -51,6 +54,16 @@ class NodeTest < Minitest::Test
     assert_equal false, head.links["b"].links["a"].end_of_word
     assert_equal true,  head.links["b"].links["a"].links["r"].end_of_word
     assert_equal true,  head.links["b"].links["a"].links["t"].end_of_word
+  end
+
+  def test_get_search_node_returns_node
+    head = Node.new
+    head.insert("bat")
+
+    head.get_search_node("ba")
+
+    assert_equal 2,     head.links["b"].links["a"].depth
+    assert_equal ["t"], head.links["b"].links["a"].links.keys
   end
 
 end
