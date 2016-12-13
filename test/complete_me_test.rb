@@ -53,4 +53,36 @@ class CompleteMeTest < Minitest::Test
     assert_equal true,  trie.head.links["b"].links["a"].links["t"].links["s"].end_of_word
   end
 
-end
+  def test_suggest_three_words
+    trie = CompleteMe.new
+    trie.insert("bat")
+    trie.insert("bar")
+    trie.insert("bats")
+
+    list_of_words = trie.suggest("ba").sort
+
+    assert_equal ["bar","bat","bats"], list_of_words
+  end
+
+  def test_populate_three_words
+    trie = CompleteMe.new
+
+    trie.populate("pizza\ndog\ncat")
+    
+    assert_equal 3, trie.count
+  end
+
+  def test_populate_entire_dictionary
+    trie = CompleteMe.new
+    dictionary = File.read("/usr/share/dict/words")
+
+    trie.populate(dictionary)
+
+    assert_equal 234371, trie.count
+  end
+
+end # class end
+
+
+
+

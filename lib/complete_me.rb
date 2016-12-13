@@ -9,19 +9,24 @@ class CompleteMe
   end
 
   def insert(word)
-    @head.insert(word)
+    @head.insert(word.downcase)
   end
 
   def count
-    # output = number_of_words_in_tree
+    @head.get_list_of_words.length
   end
 
   def suggest(suggestion)
-    # output = array_of_words
+    search_node = @head.get_search_node(suggestion)
+    words = search_node.get_list_of_words(suggestion)
+    words
   end
 
   def populate(dictionary)
-    # output = none
+    words = dictionary.split("\n").sort
+    words.each do |word|
+      insert(word)
+    end
   end
 
   # def select(suggestion, weighted_word)

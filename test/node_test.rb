@@ -66,4 +66,16 @@ class NodeTest < Minitest::Test
     assert_equal ["t"], head.links["b"].links["a"].links.keys
   end
 
+    def test_get_list_of_words_short_list
+    head = Node.new
+    head.insert("bat")
+    head.insert("bar")
+    suggestion = "ba"
+    search_node = head.get_search_node(suggestion)
+
+    words = search_node.get_list_of_words(suggestion).sort
+
+    assert_equal ["bar","bat"], words
+  end
+
 end

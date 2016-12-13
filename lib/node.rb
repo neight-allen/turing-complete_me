@@ -41,5 +41,27 @@ class Node
 
   end
 
+  def get_list_of_words(suggestion="", list_of_words=[])
+    # if this node is marked as the end of a word, add suggestion to list_of_words
+    if @end_of_word
+      list_of_words.push(suggestion)
+    end
+    # enumerate through the list of children
+    @links.each do | letter, child_node |
+      # for each child, run this method recursively
+      list_of_words = child_node.get_list_of_words(suggestion + letter, list_of_words)
+    end
+    return list_of_words
+  end
+
+  def count(counter=0)
+
+
+
+  end
+
+
+
+
 
 end #class end
