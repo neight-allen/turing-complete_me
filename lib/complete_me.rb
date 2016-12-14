@@ -1,7 +1,7 @@
 require './lib/node'
 
 class CompleteMe
-  
+
   attr_reader :head
 
   def initialize
@@ -17,9 +17,10 @@ class CompleteMe
   end
 
   def suggest(suggestion)
-    search_node = @head.get_search_node(suggestion)
+    search_node = @head.get_node(suggestion)
     words = search_node.get_list_of_words(suggestion)
-    words
+    weighted_list = parse_out_weights(words, suggestion)
+    return weighted_list
   end
 
   def populate(dictionary)
@@ -29,10 +30,34 @@ class CompleteMe
     end
   end
 
-  # def select(suggestion, weighted_word)
-  # end
+  def select(suggestion, weighted_word)
+    node = @head.get_node(weighted_word)
+    node.add_weight(suggestion)
+  end
 
   # def delete(existing_word)
   # end
 
+  def parse_out_weights(words, suggestion)
+    weighted_word_list = {}
+    words.each do |word, weights|
+      if weights[suggestion].nil?
+        new_weight = 0
+      else
+        new_weight = weights[suggestion]
+      end
+      if weighted_word_list[new_weight].nil?
+        weighted_word_list[new_weight] = [word]
+      else
+        weighted_word_list[new_weight].push(word)
+      end
+    end
+    final_list = []
+    weighted_word_list.keys.sort.reverse.each do |num|
+      final_list.concat(weighted_word_list[num].sort)
+    end
+    return final_list
+  end
+
 end
+

@@ -56,26 +56,48 @@ class NodeTest < Minitest::Test
     assert_equal true,  head.links["b"].links["a"].links["t"].end_of_word
   end
 
-  def test_get_search_node_returns_node
+  def test_get_node_returns_node
     head = Node.new
     head.insert("bat")
 
-    head.get_search_node("ba")
+    head.get_node("ba")
 
     assert_equal 2,     head.links["b"].links["a"].depth
     assert_equal ["t"], head.links["b"].links["a"].links.keys
   end
 
-    def test_get_list_of_words_short_list
+  def test_get_list_of_words_short_list
     head = Node.new
     head.insert("bat")
     head.insert("bar")
     suggestion = "ba"
-    search_node = head.get_search_node(suggestion)
+    search_node = head.get_node(suggestion)
 
     words = search_node.get_list_of_words(suggestion).sort
 
     assert_equal ["bar","bat"], words
+  end
+
+  def test_weights_shor
+    head = Node.new
+    head.insert("bat")
+    head.insert("bar")
+
+    bat = head.get_node("bat")
+    bar = head.get_node("bar")
+
+    assert_equal Hash.new, bat.weights
+    assert_equal Hash.new, bar.weights
+
+    bat.add_weight("ba")
+    bat = head.get_node("bat")
+    bar = head.get_node("bar")
+
+    hash_test = {}
+    hash_test["ba"] = 1
+
+    assert_equal hash_test, bat.weights
+    assert_equal Hash.new,  bar.weights
   end
 
 end

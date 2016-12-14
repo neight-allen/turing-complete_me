@@ -2,66 +2,57 @@ class Node
 
   attr_reader :links,
               :end_of_word,
-              :depth
+              :depth,
+              :weights
 
   def initialize(depth=0)
     @links        = {}
     @end_of_word  = false
     @depth        = depth
+    @weights      = {}
   end
 
   def insert(word)
-
     letter = word[@depth]
-
-    if letter.nil? #if we'ver reached the end of the word, end recursion
+    if letter.nil?
       @end_of_word = true
-    else # otherwise
-      if @links[letter].nil? # add a link to a new node for letter if one doesn't exist
+    else
+      if @links[letter].nil?
         @links[letter] = Node.new(@depth+1)
       end
-      # keep traveling/creating branch until we've finished the word
       child_node = @links[letter]
       child_node.insert(word)
     end
   end
 
-  def get_search_node(suggestion)
-
+  def get_node(suggestion)
     letter = suggestion[@depth]
-
-    if letter.nil? #if we've reached the end of the word
+    if letter.nil?
       return self
-    elsif @links[letter].nil? #if there is no link in the node's has for letter
+    elsif @links[letter].nil?
       return nil
-    else # otherwise, continue searching down the node branch
+    else
       child_node = @links[letter]
-      child_node.get_search_node(suggestion)
+      child_node.get_node(suggestion)
     end
-
   end
 
-  def get_list_of_words(suggestion="", list_of_words=[])
-    # if this node is marked as the end of a word, add suggestion to list_of_words
+  def get_list_of_words(suggestion="", list_of_words={})
     if @end_of_word
-      list_of_words.push(suggestion)
+      list_of_words[suggestion] = self.weights
     end
-    # enumerate through the list of children
     @links.each do | letter, child_node |
-      # for each child, run this method recursively
       list_of_words = child_node.get_list_of_words(suggestion + letter, list_of_words)
     end
     return list_of_words
   end
 
-  def count(counter=0)
-
-
-
+  def add_weight(suggestion)
+    if @weights[suggestion].nil?
+      @weights[suggestion] = 1
+    else
+      @weights[suggestion] += 1
+    end
   end
 
-
-
-
-
-end #class end
+end

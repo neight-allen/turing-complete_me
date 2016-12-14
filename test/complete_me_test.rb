@@ -68,7 +68,7 @@ class CompleteMeTest < Minitest::Test
     trie = CompleteMe.new
 
     trie.populate("pizza\ndog\ncat")
-    
+
     assert_equal 3, trie.count
   end
 
@@ -79,6 +79,86 @@ class CompleteMeTest < Minitest::Test
     trie.populate(dictionary)
 
     assert_equal 234371, trie.count
+  end
+
+  def test_select_once
+    trie = CompleteMe.new
+    trie.insert("bat")
+    trie.insert("bar")
+    trie.insert("bare")
+
+    trie.select("ba","bat")
+
+    equals_hash = {"ba"=>1}
+    assert_equal equals_hash, trie.head.links["b"].links["a"].links["t"].weights
+  end
+
+  def test_select_twice
+    trie = CompleteMe.new
+    trie.insert("bat")
+    trie.insert("bar")
+    trie.insert("bare")
+
+    trie.select("ba","bat")
+    trie.select("ba","bat")
+
+    equals_hash = {"ba"=>2}
+    assert_equal equals_hash, trie.head.links["b"].links["a"].links["t"].weights
+  end
+
+  def test_parse_out_weights_all_equal
+    trie = CompleteMe.new
+    words = { "bat" => {},
+              "bar" => {},
+              "bats" => {},
+            }
+
+    weighted_list = trie.parse_out_weights(words,"ba")
+
+    assert_equal ["bar","bat","bats"], weighted_list
+  end
+
+  def test_parse_out_weights_all_different
+    trie = CompleteMe.new
+    words = { "bat" => {"ba" => 1},
+              "bar" => {"ba" => 2},
+              "bats" => {"ba" => 3},
+            }
+
+    weighted_list = trie.parse_out_weights(words,"ba")
+
+    assert_equal ["bats","bar","bat"], weighted_list
+  end
+
+  def test_parse_out_weights_two_equal
+    trie = CompleteMe.new
+    words = { "bat" => {},
+              "bar" => {"ba" => 1},
+              "bats" => {"ba" => 1},
+            }
+
+    weighted_list = trie.parse_out_weights(words,"ba")
+
+    assert_equal ["bar","bats","bat"], weighted_list
+  end
+
+  def test_populate_addresses
+    trie = CompleteMe.new
+    addresses = ["3690 N Monaco Street Pkwy", "3612 N Monaco Street Pkwy", "3265 N Krameria St", "6123 E Martin Luther King Blvd", "6101 E Martin Luther King Blvd", "3205 N Locust St", "6315 E Martin Luther King Blvd", "4595 N Quebec St", "3888 N Forest St"].join("\n")
+
+    trie.populate(addresses)
+
+    assert_equal ["3","4","6"], trie.head.links.keys
+    assert_equal ["2","6","8"], trie.head.links["3"].links.keys
+  end
+  def test_populate_addresses
+    trie = CompleteMe.new
+    addresses = ["3690 N Monaco Street Pkwy", "3612 N Monaco Street Pkwy", "3265 N Krameria St", "6123 E Martin Luther King Blvd", "6101 E Martin Luther King Blvd", "3205 N Locust St", "6315 E Martin Luther King Blvd", "4595 N Quebec St", "3888 N Forest St"].join("\n")
+    trie.populate(addresses)
+
+    address = trie.suggest("3690")
+
+    assert_equal "3690 N Monaco Street Pkwy", address
   end
 
 end # class end
