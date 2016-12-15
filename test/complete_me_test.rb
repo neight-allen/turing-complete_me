@@ -147,21 +147,20 @@ class CompleteMeTest < Minitest::Test
 
   def test_populate_addresses
     trie = CompleteMe.new
-    addresses = ["3690 N Monaco Street Pkwy", "3612 N Monaco Street Pkwy", "3265 N Krameria St", "6123 E Martin Luther King Blvd", "6101 E Martin Luther King Blvd", "3205 N Locust St", "6315 E Martin Luther King Blvd", "4595 N Quebec St", "3888 N Forest St"].join("\n")
 
-    trie.populate(addresses)
+    trie.populate(small_address_list)
 
     assert_equal ["3","4","6"], trie.head.links.keys
     assert_equal ["2","6","8"], trie.head.links["3"].links.keys
+    assert_equal ["3690 N Monaco Street Pkwy"], trie.suggest("3690")
   end
-  def test_populate_addresses
+
+  def test_populate_entire_address_list
     trie = CompleteMe.new
-    addresses = ["3690 N Monaco Street Pkwy", "3612 N Monaco Street Pkwy", "3265 N Krameria St", "6123 E Martin Luther King Blvd", "6101 E Martin Luther King Blvd", "3205 N Locust St", "6315 E Martin Luther King Blvd", "4595 N Quebec St", "3888 N Forest St"].join("\n")
-    trie.populate(addresses)
 
-    address = trie.suggest("3690")
+    trie.populate(large_address_list)
 
-    assert_equal ["3690 N Monaco Street Pkwy"], address
+    assert_equal 295705, trie.count
   end
 
   def test_delete_no_nodes
@@ -234,12 +233,16 @@ class CompleteMeTest < Minitest::Test
     assert_equal ["car","cart","carting"], trie.suggest("ca")
   end
 
+  def small_address_list
+    ["3690 N Monaco Street Pkwy", "3612 N Monaco Street Pkwy", "3265 N Krameria St", "6123 E Martin Luther King Blvd", "6101 E Martin Luther King Blvd", "3205 N Locust St", "6315 E Martin Luther King Blvd", "4595 N Quebec St", "3888 N Forest St"].join("\n")
+  end
+
+  def large_address_list
+    File.read("./test/denver_addresses.txt")
+  end
+
   def empty_hash
     Hash.new
   end
 
-end # class end
-
-
-
-
+end

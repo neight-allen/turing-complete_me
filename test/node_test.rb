@@ -17,11 +17,13 @@ class NodeTest < Minitest::Test
     assert node
   end
 
-  def test_create_head_node
+  def test_node_defaults
     head = Node.new
 
-    assert_equal 0,         head.depth
     assert_equal empty_hash,  head.links
+    assert_equal false,       head.end_of_word
+    assert_equal 0,           head.depth
+    assert_equal empty_hash,  head.weights
   end
 
   def test_insert_single_letter
@@ -31,6 +33,7 @@ class NodeTest < Minitest::Test
 
     assert_equal ["a"], head.links.keys
     assert_equal 1,     head.links["a"].depth
+    assert_equal true,  head.links["a"].end_of_word
   end
 
   def test_insert_short_word
@@ -59,14 +62,32 @@ class NodeTest < Minitest::Test
     assert_equal true,  head.links["b"].links["a"].links["t"].end_of_word
   end
 
-  def test_get_node_returns_node
+  def test_get_node_empty_string
     head = Node.new
     head.insert("bat")
 
-    head.get_node("ba")
+    node = head.get_node("")
 
-    assert_equal 2,     head.links["b"].links["a"].depth
-    assert_equal ["t"], head.links["b"].links["a"].links.keys
+    assert_equal head, node
+  end
+
+  def test_get_node_no_links
+    head = Node.new
+    head.insert("a")
+
+    node = head.get_node("at")
+
+    assert_nil node
+  end
+
+  def test_get_node_short_string
+    head = Node.new
+    head.insert("bat")
+
+    node = head.get_node("ba")
+
+    assert_equal 2,     node.depth
+    assert_equal ["t"], node.links.keys
   end
 
   def test_get_list_of_words_short_list
@@ -81,26 +102,33 @@ class NodeTest < Minitest::Test
     assert_equal [["bar",empty_hash],["bat",empty_hash]], words
   end
 
-  def test_weights_short
+  def test_add_weight_no_existing_weights
     head = Node.new
     head.insert("bat")
     head.insert("bar")
-
     bat = head.get_node("bat")
     bar = head.get_node("bar")
 
-    assert_equal empty_hash, bat.weights
-    assert_equal empty_hash, bar.weights
+    assert_equal 0, bat.weights.length
+    assert_equal 0, bar.weights.length
 
     bat.add_weight("ba")
+
+    assert_equal 1, bat.weights["ba"]
+    assert_equal 0, bar.weights.length
+  end
+
+  def test_add_weight_existing_weight
+    head = Node.new
+    head.insert("bat")
     bat = head.get_node("bat")
-    bar = head.get_node("bar")
 
-    hash_test = {}
-    hash_test["ba"] = 1
+    assert_equal 0, bat.weights.length
 
-    assert_equal hash_test,   bat.weights
-    assert_equal empty_hash,  bar.weights
+    bat.add_weight("ba")
+    bat.add_weight("ba")
+
+    assert_equal 2, bat.weights["ba"]
   end
 
   def test_get_parent_and_child_node
@@ -114,22 +142,24 @@ class NodeTest < Minitest::Test
     assert_equal head.links["b"].links["a"].links["r"], child_node
   end
 
-  def test_remove_link_works
+  def test_remove_word
     head = Node.new
     head.insert("bar")
+    node = head.links["b"].links["a"].links["r"]
 
-    head.links["b"].links["a"].links["r"].remove_word
+    node.remove_word
 
-    assert_equal false, head.links["b"].links["a"].links["r"].end_of_word
+    assert_equal false, node.end_of_word
   end
 
-  def test_remove_link_works
+  def test_remove_link
     head = Node.new
     head.insert("bar")
+    node = head.links["b"].links["a"]
 
-    head.links["b"].links["a"].remove_link("r")
+    node.remove_link("r")
 
-    assert_equal empty_hash, head.links["b"].links["a"].links
+    assert_equal 0, node.links.length
   end
 
   def empty_hash
