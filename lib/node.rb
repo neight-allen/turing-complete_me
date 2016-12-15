@@ -2,9 +2,8 @@ class Node
 
   attr_reader   :links,
                 :depth,
+                :end_of_word,
                 :weights
-
-  attr_accessor :end_of_word
 
   def initialize(depth=0)
     @links        = {}
