@@ -35,8 +35,11 @@ class CompleteMe
     node.add_weight(suggestion)
   end
 
-  # def delete(existing_word)
-  # end
+  def delete(existing_word)
+    node = @head.get_node(existing_word)
+    node.remove_word
+    disconnect_nodes(existing_word)
+  end
 
   def parse_out_weights(words, suggestion)
     weighted_word_list = {}
@@ -57,6 +60,16 @@ class CompleteMe
       final_list.concat(weighted_word_list[num].sort)
     end
     return final_list
+  end
+
+  def disconnect_nodes(word)
+    parent_node, node = @head.get_parent_and_child(word)
+    if node.links.empty?
+      parent_node.remove_link(word[-1])
+      if parent_node.end_of_word == false
+        disconnect_nodes(word[0..-2])
+      end
+    end
   end
 
 end

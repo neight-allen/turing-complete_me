@@ -1,9 +1,10 @@
 class Node
 
-  attr_reader :links,
-              :end_of_word,
-              :depth,
-              :weights
+  attr_reader   :links,
+                :depth,
+                :weights
+
+  attr_accessor :end_of_word
 
   def initialize(depth=0)
     @links        = {}
@@ -53,6 +54,21 @@ class Node
     else
       @weights[suggestion] += 1
     end
+  end
+
+  def remove_word
+    @end_of_word = false
+  end
+
+  def remove_link(letter)
+    @links.delete(letter)
+  end
+
+  def get_parent_and_child(word)
+    parent_node = get_node(word[0..-2])
+    letter = word[-1]
+    node = parent_node.links[letter]
+    return parent_node, node
   end
 
 end
