@@ -10,6 +10,7 @@ class CompleteMe
 
   def insert(word)
     @head.insert(word)
+    nil
   end
 
   def count
@@ -62,17 +63,14 @@ class CompleteMe
   end
 
   def get_weight_for_each_word(words, suggestion)
-    words.each do | key, value|
-      words[key] = value[suggestion].to_i
+    words.reduce({}) do |weighted_words, (key, value)|
+      weighted_words[key] = value[suggestion].to_i
+      weighted_words
     end
-    return words
   end
 
   def group_words_by_weight(words)
-    words = words.group_by do | key, value |
-      value
-    end
-    return words
+    words.group_by {| key, value | value}
   end
 
   def get_list_of_words_by_weight(words)
@@ -93,4 +91,3 @@ class CompleteMe
   end
 
 end
-

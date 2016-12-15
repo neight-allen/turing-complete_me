@@ -1,4 +1,4 @@
-class Node
+  class Node
 
   attr_reader   :links,
                 :depth,
@@ -27,14 +27,10 @@ class Node
 
   def get_node(suggestion)
     letter = suggestion[@depth]
-    if letter.nil?
-      return self
-    elsif @links[letter].nil?
-      return nil
-    else
-      child_node = @links[letter]
-      child_node.get_node(suggestion)
-    end
+    return self unless letter
+    return nil if @links[letter].nil?
+    child_node = @links[letter]
+    child_node.get_node(suggestion)
   end
 
   def get_list_of_words(suggestion="", list_of_words={})
