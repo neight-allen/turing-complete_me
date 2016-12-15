@@ -73,13 +73,12 @@ class CompleteMeTest < Minitest::Test
   end
 
   def test_populate_entire_dictionary
-    skip
     trie = CompleteMe.new
     dictionary = File.read("/usr/share/dict/words")
 
     trie.populate(dictionary)
 
-    assert_equal 234371, trie.count
+    assert_equal 235886, trie.count
   end
 
   def test_select_once
@@ -153,14 +152,13 @@ class CompleteMeTest < Minitest::Test
     assert_equal ["2","6","8"], trie.head.links["3"].links.keys
   end
   def test_populate_addresses
-    skip
     trie = CompleteMe.new
     addresses = ["3690 N Monaco Street Pkwy", "3612 N Monaco Street Pkwy", "3265 N Krameria St", "6123 E Martin Luther King Blvd", "6101 E Martin Luther King Blvd", "3205 N Locust St", "6315 E Martin Luther King Blvd", "4595 N Quebec St", "3888 N Forest St"].join("\n")
     trie.populate(addresses)
 
     address = trie.suggest("3690")
 
-    assert_equal "3690 N Monaco Street Pkwy", address
+    assert_equal ["3690 N Monaco Street Pkwy"], address
   end
 
   def test_delete_no_nodes

@@ -75,7 +75,7 @@ class NodeTest < Minitest::Test
 
     words = search_node.get_list_of_words(suggestion).sort
 
-    assert_equal ["bar","bat"], words
+    assert_equal [["bar",empty_hash],["bat",empty_hash]], words
   end
 
   def test_weights_short
